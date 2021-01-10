@@ -15,8 +15,7 @@ namespace StealthNotes
 		private Config config;
 
 		private bool isMuted = false;
-		private TimeSpan muteInterval = TimeSpan.FromSeconds(2);
-
+		
 		private EnhancedTimer timer;
 		private System.Drawing.Color defaultCellBgColor = System.Drawing.Color.White;
 
@@ -32,15 +31,10 @@ namespace StealthNotes
 
 			config = new Config().Load();
 
-			InitGrid();
-			SetMuteInterval();
+			trackBar1.Value = config.MuteInterval;
 			SetupUnMuteTimer();
+			InitGrid();
 			SetupKeyboardHook();
-		}
-
-		private void SetMuteInterval()
-		{
-			trackBar1.Value = (int)muteInterval.TotalSeconds;
 		}
 
 		private void SetupKeyboardHook()
@@ -74,10 +68,11 @@ namespace StealthNotes
 
 		private void SetupUnMuteTimer()
 		{
-			timer = new EnhancedTimer(muteInterval.TotalMilliseconds);
+			timer = new EnhancedTimer(config.MuteInterval * 1000);
 			timer.Elapsed += OnTimedEvent;
 			timer.AutoReset = false;
 			timer.Enabled = true;
+			timer.Interval = trackBar1.Value * 1000;
 		}
 
 		private void keyboardHook_OnKeyPressed(object sender, Keys e)
@@ -185,9 +180,16 @@ namespace StealthNotes
 
 		private void trackBar1_Scroll(object sender, EventArgs e)
 		{
-			int seconds = (sender as TrackBar).Value;
-			timer.Interval = seconds * 1000;
-			lblUnmuteDuration.Text = $"Unmute after {seconds} second{(seconds == 1 ? "" : "s")}";
+			timer.Interval = trackBar1.Value * 1000;
+		}
+
+		private void trackBar1_ValueChanged(object sender, EventArgs e)
+		{
+			int interval = (sender as TrackBar).Value;
+			lblUnmuteDuration.Text = $"Unmute after {interval} second{(interval == 1 ? "" : "s")}";
+
+			config.MuteInterval = interval;
+			config.Save();
 		}
 	}
 }

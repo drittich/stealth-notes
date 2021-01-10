@@ -8,9 +8,11 @@ namespace StealthNotes
 {
 	public class Config
 	{
-		public HashSet<string> DevicesToMute { get; set; }
 		private string configFilePath;
 		private static string configFileName = "config.json";
+
+		public HashSet<string> DevicesToMute { get; set; }
+		public int MuteInterval { get; set; }
 
 		public Config()
 		{
@@ -29,6 +31,7 @@ namespace StealthNotes
 				var data = File.ReadAllText(GetConfigFilePath());
 				var config = JsonConvert.DeserializeObject<Config>(data);
 				DevicesToMute = config.DevicesToMute;
+				MuteInterval = config.MuteInterval == 0 ? 5 : config.MuteInterval;
 			}
 
 			return this;
