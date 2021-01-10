@@ -33,9 +33,14 @@ namespace StealthNotes
 			config = new Config().Load();
 
 			InitGrid();
-			//MuteAllInputs();
+			SetMuteInterval();
 			SetupUnMuteTimer();
 			SetupKeyboardHook();
+		}
+
+		private void SetMuteInterval()
+		{
+			trackBar1.Value = (int)muteInterval.TotalSeconds;
 		}
 
 		private void SetupKeyboardHook()
@@ -176,6 +181,13 @@ namespace StealthNotes
 			inputs = new InputDevices();
 			dataGridView1.Rows.Clear();
 			PopulateGrid();
+		}
+
+		private void trackBar1_Scroll(object sender, EventArgs e)
+		{
+			int seconds = (sender as TrackBar).Value;
+			timer.Interval = seconds * 1000;
+			lblUnmuteDuration.Text = $"Unmute after {seconds} second{(seconds == 1 ? "" : "s")}";
 		}
 	}
 }
