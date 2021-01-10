@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Windows.Forms;
 
 using Newtonsoft.Json;
 
-namespace MuteMicWhenTyping
+namespace StealthNotes
 {
 	public class Config
 	{
-		public List<string> DevicesToMute { get; set; }
+		public HashSet<string> DevicesToMute { get; set; }
 		private string configFilePath;
 		private static string configFileName = "config.json";
 
@@ -23,7 +21,7 @@ namespace MuteMicWhenTyping
 		{
 			if (!File.Exists(configFilePath))
 			{
-				DevicesToMute = new List<string>();
+				DevicesToMute = new HashSet<string>();
 				Save();
 			}
 			else
@@ -35,6 +33,7 @@ namespace MuteMicWhenTyping
 
 			return this;
 		}
+
 		public void Save()
 		{
 			var data = JsonConvert.SerializeObject(this);
