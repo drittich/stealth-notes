@@ -38,5 +38,10 @@ namespace StealthNotes
 			var enabledDevices = enumerator.EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active).Where(x => x.State == DeviceState.Active).ToList();
 			return enabledDevices;
 		}
+
+		public void RemoveActiveInput(string friendlyName)
+		{
+			ActiveInputs.RemoveAll(x => x.FriendlyName == friendlyName);
+		}
 	}
 }

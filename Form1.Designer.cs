@@ -36,11 +36,11 @@ namespace StealthNotes
 			this.FriendlyName = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.IsMuted = new System.Windows.Forms.DataGridViewCheckBoxColumn();
 			this.btnMuteAll = new System.Windows.Forms.Button();
-			this.btnReload = new System.Windows.Forms.Button();
 			this.trackBar1 = new System.Windows.Forms.TrackBar();
 			this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.lblUnmuteDuration = new System.Windows.Forms.Label();
 			this.label1 = new System.Windows.Forms.Label();
+			this.button1 = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
 			this.SuspendLayout();
@@ -48,7 +48,7 @@ namespace StealthNotes
 			// btnUnmuteAll
 			// 
 			this.btnUnmuteAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.btnUnmuteAll.Location = new System.Drawing.Point(183, 308);
+			this.btnUnmuteAll.Location = new System.Drawing.Point(183, 317);
 			this.btnUnmuteAll.Name = "btnUnmuteAll";
 			this.btnUnmuteAll.Size = new System.Drawing.Size(147, 60);
 			this.btnUnmuteAll.TabIndex = 3;
@@ -72,7 +72,7 @@ namespace StealthNotes
             this.FriendlyName,
             this.IsMuted});
 			this.dataGridView1.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnKeystroke;
-			this.dataGridView1.Location = new System.Drawing.Point(13, 37);
+			this.dataGridView1.Location = new System.Drawing.Point(13, 53);
 			this.dataGridView1.MultiSelect = false;
 			this.dataGridView1.Name = "dataGridView1";
 			this.dataGridView1.RowHeadersVisible = false;
@@ -80,7 +80,7 @@ namespace StealthNotes
 			this.dataGridView1.RowTemplate.Height = 33;
 			this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
 			this.dataGridView1.ShowCellToolTips = false;
-			this.dataGridView1.Size = new System.Drawing.Size(786, 247);
+			this.dataGridView1.Size = new System.Drawing.Size(786, 246);
 			this.dataGridView1.TabIndex = 1;
 			this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
 			this.dataGridView1.SelectionChanged += new System.EventHandler(this.dataGridView1_SelectionChanged);
@@ -114,7 +114,7 @@ namespace StealthNotes
 			// btnMuteAll
 			// 
 			this.btnMuteAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.btnMuteAll.Location = new System.Drawing.Point(16, 308);
+			this.btnMuteAll.Location = new System.Drawing.Point(16, 317);
 			this.btnMuteAll.Name = "btnMuteAll";
 			this.btnMuteAll.Size = new System.Drawing.Size(147, 60);
 			this.btnMuteAll.TabIndex = 2;
@@ -122,25 +122,14 @@ namespace StealthNotes
 			this.btnMuteAll.UseVisualStyleBackColor = true;
 			this.btnMuteAll.Click += new System.EventHandler(this.btnMuteAll_Click);
 			// 
-			// btnReload
-			// 
-			this.btnReload.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.btnReload.Location = new System.Drawing.Point(354, 308);
-			this.btnReload.Name = "btnReload";
-			this.btnReload.Size = new System.Drawing.Size(147, 60);
-			this.btnReload.TabIndex = 4;
-			this.btnReload.Text = "Reload";
-			this.btnReload.UseVisualStyleBackColor = true;
-			this.btnReload.Click += new System.EventHandler(this.btnReload_Click);
-			// 
 			// trackBar1
 			// 
 			this.trackBar1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.trackBar1.LargeChange = 1;
-			this.trackBar1.Location = new System.Drawing.Point(525, 303);
+			this.trackBar1.Location = new System.Drawing.Point(350, 317);
 			this.trackBar1.Minimum = 1;
 			this.trackBar1.Name = "trackBar1";
-			this.trackBar1.Size = new System.Drawing.Size(227, 69);
+			this.trackBar1.Size = new System.Drawing.Size(227, 45);
 			this.trackBar1.TabIndex = 5;
 			this.trackBar1.Value = 1;
 			this.trackBar1.Scroll += new System.EventHandler(this.trackBar1_Scroll);
@@ -156,7 +145,7 @@ namespace StealthNotes
 			// 
 			this.lblUnmuteDuration.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.lblUnmuteDuration.AutoSize = true;
-			this.lblUnmuteDuration.Location = new System.Drawing.Point(535, 337);
+			this.lblUnmuteDuration.Location = new System.Drawing.Point(360, 351);
 			this.lblUnmuteDuration.Name = "lblUnmuteDuration";
 			this.lblUnmuteDuration.Size = new System.Drawing.Size(201, 25);
 			this.lblUnmuteDuration.TabIndex = 1;
@@ -165,21 +154,34 @@ namespace StealthNotes
 			// label1
 			// 
 			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(13, 5);
+			this.label1.Location = new System.Drawing.Point(13, 17);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(317, 25);
 			this.label1.TabIndex = 9;
 			this.label1.Text = "Select the inputs to mute when typing:";
 			// 
+			// button1
+			// 
+			this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.button1.Font = new System.Drawing.Font("Segoe UI", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+			this.button1.ForeColor = System.Drawing.SystemColors.Highlight;
+			this.button1.Location = new System.Drawing.Point(328, 6);
+			this.button1.Name = "button1";
+			this.button1.Size = new System.Drawing.Size(112, 25);
+			this.button1.TabIndex = 10;
+			this.button1.Text = "button1";
+			this.button1.UseVisualStyleBackColor = true;
+			this.button1.Click += new System.EventHandler(this.button1_Click);
+			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(813, 386);
+			this.ClientSize = new System.Drawing.Size(813, 391);
+			this.Controls.Add(this.button1);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.lblUnmuteDuration);
 			this.Controls.Add(this.trackBar1);
-			this.Controls.Add(this.btnReload);
 			this.Controls.Add(this.btnMuteAll);
 			this.Controls.Add(this.dataGridView1);
 			this.Controls.Add(this.btnUnmuteAll);
@@ -199,7 +201,6 @@ namespace StealthNotes
 		private System.Windows.Forms.Button btnUnmuteAll;
 		private System.Windows.Forms.DataGridView dataGridView1;
 		private System.Windows.Forms.Button btnMuteAll;
-		private System.Windows.Forms.Button btnReload;
 		private System.Windows.Forms.TrackBar trackBar1;
 		private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
 		private System.Windows.Forms.Label lblUnmuteDuration;
@@ -207,6 +208,7 @@ namespace StealthNotes
 		private System.Windows.Forms.DataGridViewTextBoxColumn FriendlyName;
 		private System.Windows.Forms.DataGridViewCheckBoxColumn IsMuted;
 		private System.Windows.Forms.Label label1;
+		private System.Windows.Forms.Button button1;
 	}
 }
 

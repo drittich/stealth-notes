@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Timers;
@@ -18,6 +19,7 @@ namespace StealthNotes
 
 		private EnhancedTimer timer;
 		private System.Drawing.Color defaultCellBgColor = System.Drawing.Color.White;
+		private bool reloadDevicesOnNextUnmute = false;
 
 		public Form1()
 		{
@@ -35,6 +37,11 @@ namespace StealthNotes
 			SetupUnMuteTimer();
 			InitGrid();
 			SetupKeyboardHook();
+
+			button1.Font = new Font("Wingdings 3", 12, FontStyle.Bold);
+			button1.Text = Char.ConvertFromUtf32(81); // or 80
+			button1.Width = 40;
+			button1.Height = 40;
 		}
 
 		private void SetupKeyboardHook()
@@ -92,6 +99,12 @@ namespace StealthNotes
 			{
 				isMuted = false;
 				MuteSelectedItems(false);
+
+				if (reloadDevicesOnNextUnmute)
+				{
+					reloadDevicesOnNextUnmute = false;
+					ReloadDevices();
+				}
 			}
 		}
 
@@ -124,12 +137,20 @@ namespace StealthNotes
 
 		private void MuteInput(string friendlyName, bool mute = true)
 		{
-			var muting = mute ? "Muting" : "Unmuting";
-			Log($"{muting} {friendlyName}");
-			inputs.MuteInputByFriendlyName(friendlyName, mute);
-			var row = GetRowByName(friendlyName);
-			row.Cells[(int)DeviceGridColumns.Muted].Value = mute;
-			row.Cells[(int)DeviceGridColumns.Name].Style.BackColor = mute ? System.Drawing.Color.LightPink : defaultCellBgColor;
+			var strMuting = mute ? "Muting" : "Unmuting";
+			Log($"{strMuting} {friendlyName}");
+			try
+			{
+				inputs.MuteInputByFriendlyName(friendlyName, mute);
+				var row = GetRowByName(friendlyName);
+				row.Cells[(int)DeviceGridColumns.Muted].Value = mute;
+				row.Cells[(int)DeviceGridColumns.Name].Style.BackColor = mute ? System.Drawing.Color.LightPink : defaultCellBgColor;
+			}
+			catch (System.Runtime.InteropServices.COMException)
+			{
+				reloadDevicesOnNextUnmute = true;
+				inputs.RemoveActiveInput(friendlyName);
+			}
 		}
 
 		private void btnUnmuteAll_Click(object sender, EventArgs e)
@@ -189,6 +210,11 @@ namespace StealthNotes
 
 		private void btnReload_Click(object sender, EventArgs e)
 		{
+			ReloadDevices();
+		}
+
+		private void ReloadDevices()
+		{
 			inputs = new InputDevices();
 			dataGridView1.Rows.Clear();
 			PopulateGrid();
@@ -211,6 +237,11 @@ namespace StealthNotes
 		private enum DeviceGridColumns
 		{
 			Selected, Name, Muted
+		}
+
+		private void button1_Click(object sender, EventArgs e)
+		{
+			ReloadDevices();
 		}
 	}
 }
