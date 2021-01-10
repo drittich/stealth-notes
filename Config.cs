@@ -24,6 +24,7 @@ namespace StealthNotes
 			if (!File.Exists(configFilePath))
 			{
 				DevicesToMute = new HashSet<string>();
+				MuteInterval = 2;
 				Save();
 			}
 			else

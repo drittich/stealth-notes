@@ -15,7 +15,7 @@ namespace StealthNotes
 		private Config config;
 
 		private bool isMuted = false;
-		
+
 		private EnhancedTimer timer;
 		private System.Drawing.Color defaultCellBgColor = System.Drawing.Color.White;
 
@@ -61,8 +61,8 @@ namespace StealthNotes
 				var rowIdx = dataGridView1.Rows.Add(selected, name, muted);
 
 				var row = dataGridView1.Rows[rowIdx];
-				row.Cells[2].Value = muted;
-				row.Cells[1].Style.BackColor = muted ? System.Drawing.Color.LightPink : defaultCellBgColor;
+				row.Cells[(int)DeviceGridColumns.Muted].Value = muted;
+				row.Cells[(int)DeviceGridColumns.Name].Style.BackColor = muted ? System.Drawing.Color.LightPink : defaultCellBgColor;
 			}
 		}
 
@@ -104,10 +104,10 @@ namespace StealthNotes
 		{
 			foreach (DataGridViewRow row in dataGridView1.Rows)
 			{
-				var selected = (bool)row.Cells[0].Value;
+				var selected = (bool)row.Cells[(int)DeviceGridColumns.Selected].Value;
 				if (selected)
 				{
-					var friendlyName = row.Cells[1].Value.ToString();
+					var friendlyName = row.Cells[(int)DeviceGridColumns.Name].Value.ToString();
 					MuteInput(friendlyName, mute);
 				}
 			}
@@ -117,7 +117,7 @@ namespace StealthNotes
 		{
 			foreach (DataGridViewRow row in dataGridView1.Rows)
 			{
-				var friendlyName = row.Cells[1].Value.ToString();
+				var friendlyName = row.Cells[(int)DeviceGridColumns.Name].Value.ToString();
 				MuteInput(friendlyName, mute);
 			}
 		}
@@ -128,8 +128,8 @@ namespace StealthNotes
 			Log($"{muting} {friendlyName}");
 			inputs.MuteInputByFriendlyName(friendlyName, mute);
 			var row = GetRowByName(friendlyName);
-			row.Cells[2].Value = mute;
-			row.Cells[1].Style.BackColor = mute ? System.Drawing.Color.LightPink : defaultCellBgColor;
+			row.Cells[(int)DeviceGridColumns.Muted].Value = mute;
+			row.Cells[(int)DeviceGridColumns.Name].Style.BackColor = mute ? System.Drawing.Color.LightPink : defaultCellBgColor;
 		}
 
 		private void btnUnmuteAll_Click(object sender, EventArgs e)
@@ -140,22 +140,38 @@ namespace StealthNotes
 		// Ref: https://stackoverflow.com/questions/34090190/c-sharp-datagridview-checkbox-checked-event
 		private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
 		{
-			if (e.ColumnIndex == 0 && e.RowIndex >= 0)
-				dataGridView1.CommitEdit(DataGridViewDataErrorContexts.Commit);
+			// ignore header
+			if (e.RowIndex == -1)
+				return;
 
-			var friendlyName = dataGridView1.Rows[e.RowIndex].Cells[1].Value.ToString();
-			if ((bool)dataGridView1.CurrentCell.Value == true)
-				config.DevicesToMute.Add(friendlyName);
-			else
-				config.DevicesToMute.Remove(friendlyName);
+			// ignore name cell
+			if (e.ColumnIndex != (int)DeviceGridColumns.Selected && e.ColumnIndex != (int)DeviceGridColumns.Muted)
+				return;
 
-			config.Save();
+			dataGridView1.CommitEdit(DataGridViewDataErrorContexts.Commit);
+
+			var friendlyName = dataGridView1.Rows[e.RowIndex].Cells[(int)DeviceGridColumns.Name].Value.ToString();
+			var isChecked = (bool)dataGridView1.CurrentCell.Value == true;
+			
+			if (e.ColumnIndex == (int)DeviceGridColumns.Selected)
+			{
+				if (isChecked)
+					config.DevicesToMute.Add(friendlyName);
+				else
+					config.DevicesToMute.Remove(friendlyName);
+
+				config.Save();
+			}
+			else if (e.ColumnIndex == (int)DeviceGridColumns.Muted)
+			{
+				MuteInput(friendlyName, isChecked);
+			}
 		}
 
 		private DataGridViewRow GetRowByName(string name)
 		{
 			foreach (DataGridViewRow row in dataGridView1.Rows)
-				if (row.Cells[1].Value.ToString() == name)
+				if (row.Cells[(int)DeviceGridColumns.Name].Value.ToString() == name)
 					return row;
 
 			return null;
@@ -190,6 +206,11 @@ namespace StealthNotes
 
 			config.MuteInterval = interval;
 			config.Save();
+		}
+
+		private enum DeviceGridColumns
+		{
+			Selected, Name, Muted
 		}
 	}
 }
