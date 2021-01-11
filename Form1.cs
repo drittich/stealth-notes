@@ -13,7 +13,7 @@ namespace StealthNotes
 {
 	public partial class Form1 : Form
 	{
-		private const string version = "v0.1";
+		private const string version = "v0.2-alpha";
 		private InputDevices inputs;
 		private Config config;
 
@@ -33,8 +33,8 @@ namespace StealthNotes
 		private void Form1_Load(object sender, EventArgs e)
 		{
 			Text = $"Stealth Notes {version}";
-			Log($"using config from {Path.Combine(Application.LocalUserAppDataPath, "config.json")}");
 
+			Log($"using config from {Path.Combine(Application.LocalUserAppDataPath, "config.json")}");
 			config = new Config().Load();
 
 			trackBar1.Value = config.MuteInterval;
@@ -42,17 +42,20 @@ namespace StealthNotes
 			InitGrid();
 			SetupKeyboardHook();
 
+			SetRefreshDevicesButton();
+		}
+
+		private void SetRefreshDevicesButton()
+		{
 			button1.Font = new Font("Wingdings 3", 12, FontStyle.Bold);
-			button1.Text = Char.ConvertFromUtf32(81); // or 80
+			button1.Text = char.ConvertFromUtf32(81); // or 80
 			button1.Width = 40;
 			button1.Height = 40;
 		}
 
 		private void SetupKeyboardHook()
 		{
-			// Note: for the application hook, use the Hook.AppEvents() instead
 			m_GlobalHook = Hook.GlobalEvents();
-
 			m_GlobalHook.KeyDown += GlobalHookKeyPress;
 		}
 
