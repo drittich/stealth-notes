@@ -7,6 +7,8 @@ using System.Linq;
 using System.Timers;
 using System.Windows.Forms;
 
+using Gma.System.MouseKeyHook;
+
 namespace StealthNotes
 {
 	public partial class Form1 : Form
@@ -18,8 +20,10 @@ namespace StealthNotes
 		private bool isMuted = false;
 
 		private EnhancedTimer timer;
-		private System.Drawing.Color defaultCellBgColor = System.Drawing.Color.White;
+		private Color defaultCellBgColor = Color.White;
 		private bool reloadDevicesOnNextUnmute = false;
+
+		private IKeyboardMouseEvents m_GlobalHook;
 
 		public Form1()
 		{
@@ -46,9 +50,21 @@ namespace StealthNotes
 
 		private void SetupKeyboardHook()
 		{
-			var keyboardHook = new LowLevelKeyboardHook();
-			keyboardHook.OnKeyPressed += keyboardHook_OnKeyPressed;
-			keyboardHook.HookKeyboard();
+			// Note: for the application hook, use the Hook.AppEvents() instead
+			m_GlobalHook = Hook.GlobalEvents();
+
+			m_GlobalHook.KeyDown += GlobalHookKeyPress;
+		}
+
+		private void GlobalHookKeyPress(object sender, KeyEventArgs e)
+		{
+			if (!isMuted)
+			{
+				isMuted = true;
+				MuteSelectedItems();
+			}
+
+			timer.Restart();
 		}
 
 		private void InitGrid()
@@ -80,17 +96,6 @@ namespace StealthNotes
 			timer.AutoReset = false;
 			timer.Enabled = true;
 			timer.Interval = trackBar1.Value * 1000;
-		}
-
-		private void keyboardHook_OnKeyPressed(object sender, Keys e)
-		{
-			if (!isMuted)
-			{
-				isMuted = true;
-				MuteSelectedItems();
-			}
-
-			timer.Restart();
 		}
 
 		private void OnTimedEvent(object sender, ElapsedEventArgs e)
@@ -173,7 +178,7 @@ namespace StealthNotes
 
 			var friendlyName = dataGridView1.Rows[e.RowIndex].Cells[(int)DeviceGridColumns.Name].Value.ToString();
 			var isChecked = (bool)dataGridView1.CurrentCell.Value == true;
-			
+
 			if (e.ColumnIndex == (int)DeviceGridColumns.Selected)
 			{
 				if (isChecked)
