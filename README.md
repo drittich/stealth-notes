@@ -12,4 +12,4 @@ Stealth Notes is useful for video meetings where you want to generally keep your
 
 ## Installation
 
-Download the latest release and extract into a folder of your choice. Run the application by executing `StealthNotes.exe`.
+Download the [latest release](https://github.com/drittich/stealth-notes/releases) and extract into a folder of your choice. Run the application by executing `StealthNotes.exe`.
