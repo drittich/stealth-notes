@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Timers;
 using System.Windows.Forms;
 
@@ -13,7 +11,7 @@ namespace StealthNotes
 {
 	public partial class Form1 : Form
 	{
-		private const string version = "v0.3-alpha";
+		private const string version = "v0.4-alpha";
 		private InputDevices inputs;
 		private Config config;
 
@@ -39,9 +37,9 @@ namespace StealthNotes
 
 			SetupUnMuteTimer(config.MuteInterval);
 
-			trackBar1.Value = config.MuteInterval;
+			tbMuteInterval.Value = config.MuteInterval;
 			SetNewInterval(config.MuteInterval);
-			
+
 			InitGrid();
 			SetupKeyboardHook();
 
@@ -82,16 +80,17 @@ namespace StealthNotes
 
 		private void PopulateGrid()
 		{
-			foreach (var input in inputs.ActiveInputs.OrderBy(i => i.FriendlyName))
+			foreach (var deviceName in inputs.DeviceNames)
 			{
+				var input = inputs.GetDeviceByName(deviceName);
 				var selected = config.DevicesToMute.Contains(input.FriendlyName);
 				var name = input.FriendlyName;
 				var muted = input.AudioEndpointVolume.Mute;
-				var rowIdx = dataGridView1.Rows.Add(selected, name, muted);
+				var rowIdx = dgvInputs.Rows.Add(selected, name, muted);
 
-				var row = dataGridView1.Rows[rowIdx];
+				var row = dgvInputs.Rows[rowIdx];
 				row.Cells[(int)DeviceGridColumns.Muted].Value = muted;
-				row.Cells[(int)DeviceGridColumns.Name].Style.BackColor = muted ? System.Drawing.Color.LightPink : defaultCellBgColor;
+				row.Cells[(int)DeviceGridColumns.Name].Style.BackColor = muted ? Color.LightPink : defaultCellBgColor;
 			}
 		}
 
@@ -126,41 +125,41 @@ namespace StealthNotes
 
 		private void MuteSelectedItems(bool mute = true)
 		{
-			foreach (DataGridViewRow row in dataGridView1.Rows)
+			foreach (DataGridViewRow row in dgvInputs.Rows)
 			{
 				var selected = (bool)row.Cells[(int)DeviceGridColumns.Selected].Value;
 				if (selected)
 				{
-					var friendlyName = row.Cells[(int)DeviceGridColumns.Name].Value.ToString();
-					MuteInput(friendlyName, mute);
+					var name = row.Cells[(int)DeviceGridColumns.Name].Value.ToString();
+					MuteInput(name, mute);
 				}
 			}
 		}
 
 		private void MuteAllInputs(bool mute = true)
 		{
-			foreach (DataGridViewRow row in dataGridView1.Rows)
+			foreach (DataGridViewRow row in dgvInputs.Rows)
 			{
-				var friendlyName = row.Cells[(int)DeviceGridColumns.Name].Value.ToString();
-				MuteInput(friendlyName, mute);
+				var name = row.Cells[(int)DeviceGridColumns.Name].Value.ToString();
+				MuteInput(name, mute);
 			}
 		}
 
-		private void MuteInput(string friendlyName, bool mute = true)
+		private void MuteInput(string name, bool mute = true)
 		{
 			var strMuting = mute ? "Muting" : "Unmuting";
-			Log($"{strMuting} {friendlyName}");
+			Log($"{strMuting} {name}");
 			try
 			{
-				inputs.MuteInputByFriendlyName(friendlyName, mute);
-				var row = GetRowByName(friendlyName);
+				inputs.MuteInputByName(name, mute);
+				var row = GetRowByName(name);
 				row.Cells[(int)DeviceGridColumns.Muted].Value = mute;
-				row.Cells[(int)DeviceGridColumns.Name].Style.BackColor = mute ? System.Drawing.Color.LightPink : defaultCellBgColor;
+				row.Cells[(int)DeviceGridColumns.Name].Style.BackColor = mute ? Color.LightPink : defaultCellBgColor;
 			}
 			catch (System.Runtime.InteropServices.COMException)
 			{
 				reloadDevicesOnNextUnmute = true;
-				inputs.RemoveActiveInput(friendlyName);
+				inputs.RemoveActiveInput(name);
 			}
 		}
 
@@ -180,29 +179,29 @@ namespace StealthNotes
 			if (e.ColumnIndex != (int)DeviceGridColumns.Selected && e.ColumnIndex != (int)DeviceGridColumns.Muted)
 				return;
 
-			dataGridView1.CommitEdit(DataGridViewDataErrorContexts.Commit);
+			dgvInputs.CommitEdit(DataGridViewDataErrorContexts.Commit);
 
-			var friendlyName = dataGridView1.Rows[e.RowIndex].Cells[(int)DeviceGridColumns.Name].Value.ToString();
-			var isChecked = (bool)dataGridView1.CurrentCell.Value == true;
+			var name = dgvInputs.Rows[e.RowIndex].Cells[(int)DeviceGridColumns.Name].Value.ToString();
+			var isChecked = (bool)dgvInputs.CurrentCell.Value == true;
 
 			if (e.ColumnIndex == (int)DeviceGridColumns.Selected)
 			{
 				if (isChecked)
-					config.DevicesToMute.Add(friendlyName);
+					config.DevicesToMute.Add(name);
 				else
-					config.DevicesToMute.Remove(friendlyName);
+					config.DevicesToMute.Remove(name);
 
 				config.Save();
 			}
 			else if (e.ColumnIndex == (int)DeviceGridColumns.Muted)
 			{
-				MuteInput(friendlyName, isChecked);
+				MuteInput(name, isChecked);
 			}
 		}
 
 		private DataGridViewRow GetRowByName(string name)
 		{
-			foreach (DataGridViewRow row in dataGridView1.Rows)
+			foreach (DataGridViewRow row in dgvInputs.Rows)
 				if (row.Cells[(int)DeviceGridColumns.Name].Value.ToString() == name)
 					return row;
 
@@ -211,7 +210,7 @@ namespace StealthNotes
 
 		private void dataGridView1_SelectionChanged(object sender, EventArgs e)
 		{
-			dataGridView1.ClearSelection();
+			dgvInputs.ClearSelection();
 		}
 
 		private void btnMuteAll_Click(object sender, EventArgs e)
@@ -227,7 +226,7 @@ namespace StealthNotes
 		private void ReloadDevices()
 		{
 			inputs = new InputDevices();
-			dataGridView1.Rows.Clear();
+			dgvInputs.Rows.Clear();
 			PopulateGrid();
 		}
 
@@ -239,9 +238,9 @@ namespace StealthNotes
 		private void trackBar1_ValueChanged(object sender, EventArgs e)
 		{
 			int intervalSeconds = (sender as TrackBar).Value;
-			
+
 			SetNewInterval(intervalSeconds);
-			
+
 			config.MuteInterval = intervalSeconds;
 			config.Save();
 		}

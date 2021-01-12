@@ -12,36 +12,41 @@ namespace StealthNotes
 			ActiveInputs = GetActiveInputs();
 		}
 
-		public List<MMDevice> ActiveInputs { get; }
+		public Dictionary<string, MMDevice> ActiveInputs { get; }
 
-		public void MuteInputByFriendlyName(string friendlyName, bool mute = true)
+		public List<string> DeviceNames
 		{
-			var device = ActiveInputs.Where(x => x.FriendlyName == friendlyName).SingleOrDefault();
+			get
+			{
+				return ActiveInputs.Keys.OrderBy(k => k).ToList();
+			}
+		}
+
+		public void MuteInputByName(string name, bool mute = true)
+		{
+			var device = ActiveInputs[name];
 
 			if (device != null && device.AudioEndpointVolume.Mute != mute)
 				device.AudioEndpointVolume.Mute = mute;
 		}
 
-		public bool IsDeviceMuted(string friendlyName)
-		{
-			var device = ActiveInputs.Where(x => x.FriendlyName == friendlyName).SingleOrDefault();
-
-			if (device == null)
-				return false;
-
-			return device.AudioEndpointVolume.Mute;
-		}
-
-		private List<MMDevice> GetActiveInputs()
+		private Dictionary<string, MMDevice> GetActiveInputs()
 		{
 			var enumerator = new MMDeviceEnumerator();
-			var enabledDevices = enumerator.EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active).Where(x => x.State == DeviceState.Active).ToList();
+			var enabledDevices = enumerator.EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active)
+				.Where(device => device.State == DeviceState.Active)
+				.ToDictionary(device => device.FriendlyName, device => device);
 			return enabledDevices;
 		}
 
-		public void RemoveActiveInput(string friendlyName)
+		public void RemoveActiveInput(string name)
 		{
-			ActiveInputs.RemoveAll(x => x.FriendlyName == friendlyName);
+			ActiveInputs.Remove(name);
+		}
+
+		public MMDevice GetDeviceByName(string name)
+		{
+			return ActiveInputs[name];
 		}
 	}
 }
