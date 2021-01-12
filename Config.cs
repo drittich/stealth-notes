@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Windows.Forms;
@@ -16,7 +15,7 @@ namespace StealthNotes
 
 		public Config()
 		{
-			configFilePath = GetConfigFilePath();
+			configFilePath = Path.Combine(Application.LocalUserAppDataPath, configFileName);
 		}
 
 		public Config Load()
@@ -29,10 +28,10 @@ namespace StealthNotes
 			}
 			else
 			{
-				var data = File.ReadAllText(GetConfigFilePath());
-				var config = JsonSerializer.Deserialize<Config>(data);
+				var json = File.ReadAllText(configFilePath);
+				var config = JsonSerializer.Deserialize<Config>(json);
 				DevicesToMute = config.DevicesToMute;
-				MuteInterval = config.MuteInterval == 0 ? 5 : config.MuteInterval;
+				MuteInterval = (config.MuteInterval < 1 || config.MuteInterval > 10) ? 2 : config.MuteInterval;
 			}
 
 			return this;
@@ -42,13 +41,8 @@ namespace StealthNotes
 		{
 			Directory.CreateDirectory(Application.LocalUserAppDataPath);
 
-			var data = JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
-			File.WriteAllText(configFilePath, data);
-		}
-
-		private string GetConfigFilePath()
-		{
-			return Path.Combine(Application.LocalUserAppDataPath, configFileName);
+			var json = JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
+			File.WriteAllText(configFilePath, json);
 		}
 	}
 }

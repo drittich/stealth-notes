@@ -37,8 +37,11 @@ namespace StealthNotes
 			Log($"using config from {Path.Combine(Application.LocalUserAppDataPath, "config.json")}");
 			config = new Config().Load();
 
+			SetupUnMuteTimer(config.MuteInterval);
+
 			trackBar1.Value = config.MuteInterval;
-			SetupUnMuteTimer();
+			SetNewInterval(config.MuteInterval);
+			
 			InitGrid();
 			SetupKeyboardHook();
 
@@ -47,10 +50,10 @@ namespace StealthNotes
 
 		private void SetRefreshDevicesButton()
 		{
-			button1.Font = new Font("Wingdings 3", 12, FontStyle.Bold);
-			button1.Text = char.ConvertFromUtf32(81); // or 80
-			button1.Width = 40;
-			button1.Height = 40;
+			btnReloadDevices.Font = new Font("Wingdings 3", 12, FontStyle.Bold);
+			btnReloadDevices.Text = char.ConvertFromUtf32(81); // or 80
+			btnReloadDevices.Width = 40;
+			btnReloadDevices.Height = 40;
 		}
 
 		private void SetupKeyboardHook()
@@ -92,13 +95,13 @@ namespace StealthNotes
 			}
 		}
 
-		private void SetupUnMuteTimer()
+		private void SetupUnMuteTimer(int intervalSeconds)
 		{
 			timer = new EnhancedTimer(config.MuteInterval * 1000);
 			timer.Elapsed += OnTimedEvent;
 			timer.AutoReset = false;
 			timer.Enabled = true;
-			timer.Interval = trackBar1.Value * 1000;
+			timer.Interval = intervalSeconds * 1000;
 		}
 
 		private void OnTimedEvent(object sender, ElapsedEventArgs e)
@@ -230,16 +233,23 @@ namespace StealthNotes
 
 		private void trackBar1_Scroll(object sender, EventArgs e)
 		{
-			timer.Interval = trackBar1.Value * 1000;
+			config.Save();
 		}
 
 		private void trackBar1_ValueChanged(object sender, EventArgs e)
 		{
-			int interval = (sender as TrackBar).Value;
-			lblUnmuteDuration.Text = $"Unmute after {interval} second{(interval == 1 ? "" : "s")}";
-
-			config.MuteInterval = interval;
+			int intervalSeconds = (sender as TrackBar).Value;
+			
+			SetNewInterval(intervalSeconds);
+			
+			config.MuteInterval = intervalSeconds;
 			config.Save();
+		}
+
+		private void SetNewInterval(int intervalSeconds)
+		{
+			lblUnmuteDuration.Text = $"Unmute after {intervalSeconds} second{(intervalSeconds == 1 ? "" : "s")}";
+			timer.Interval = intervalSeconds * 1000;
 		}
 
 		private enum DeviceGridColumns
@@ -247,7 +257,7 @@ namespace StealthNotes
 			Selected, Name, Muted
 		}
 
-		private void button1_Click(object sender, EventArgs e)
+		private void btnReloadDevices_Click(object sender, EventArgs e)
 		{
 			ReloadDevices();
 		}

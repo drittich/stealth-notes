@@ -40,7 +40,7 @@ namespace StealthNotes
 			this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.lblUnmuteDuration = new System.Windows.Forms.Label();
 			this.label1 = new System.Windows.Forms.Label();
-			this.button1 = new System.Windows.Forms.Button();
+			this.btnReloadDevices = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
 			this.SuspendLayout();
@@ -162,23 +162,23 @@ namespace StealthNotes
 			// 
 			// button1
 			// 
-			this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.button1.Font = new System.Drawing.Font("Segoe UI", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-			this.button1.ForeColor = System.Drawing.SystemColors.Highlight;
-			this.button1.Location = new System.Drawing.Point(328, 6);
-			this.button1.Name = "button1";
-			this.button1.Size = new System.Drawing.Size(112, 25);
-			this.button1.TabIndex = 10;
-			this.button1.Text = "button1";
-			this.button1.UseVisualStyleBackColor = true;
-			this.button1.Click += new System.EventHandler(this.button1_Click);
+			this.btnReloadDevices.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.btnReloadDevices.Font = new System.Drawing.Font("Segoe UI", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+			this.btnReloadDevices.ForeColor = System.Drawing.SystemColors.Highlight;
+			this.btnReloadDevices.Location = new System.Drawing.Point(328, 6);
+			this.btnReloadDevices.Name = "button1";
+			this.btnReloadDevices.Size = new System.Drawing.Size(112, 25);
+			this.btnReloadDevices.TabIndex = 10;
+			this.btnReloadDevices.Text = "button1";
+			this.btnReloadDevices.UseVisualStyleBackColor = true;
+			this.btnReloadDevices.Click += new System.EventHandler(this.btnReloadDevices_Click);
 			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(813, 391);
-			this.Controls.Add(this.button1);
+			this.Controls.Add(this.btnReloadDevices);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.lblUnmuteDuration);
 			this.Controls.Add(this.trackBar1);
@@ -208,7 +208,7 @@ namespace StealthNotes
 		private System.Windows.Forms.DataGridViewTextBoxColumn FriendlyName;
 		private System.Windows.Forms.DataGridViewCheckBoxColumn IsMuted;
 		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.Button button1;
+		private System.Windows.Forms.Button btnReloadDevices;
 	}
 }
 
