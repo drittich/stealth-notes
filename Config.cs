@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Text.Json;
 using System.Windows.Forms;
-
-using Newtonsoft.Json;
 
 namespace StealthNotes
 {
@@ -30,7 +30,7 @@ namespace StealthNotes
 			else
 			{
 				var data = File.ReadAllText(GetConfigFilePath());
-				var config = JsonConvert.DeserializeObject<Config>(data);
+				var config = JsonSerializer.Deserialize<Config>(data);
 				DevicesToMute = config.DevicesToMute;
 				MuteInterval = config.MuteInterval == 0 ? 5 : config.MuteInterval;
 			}
@@ -42,7 +42,7 @@ namespace StealthNotes
 		{
 			Directory.CreateDirectory(Application.LocalUserAppDataPath);
 
-			var data = JsonSerializer.Serialize(this);
+			var data = JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
 			File.WriteAllText(configFilePath, data);
 		}
 
