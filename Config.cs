@@ -40,7 +40,9 @@ namespace StealthNotes
 
 		public void Save()
 		{
-			var data = JsonConvert.SerializeObject(this);
+			Directory.CreateDirectory(Application.LocalUserAppDataPath);
+
+			var data = JsonSerializer.Serialize(this);
 			File.WriteAllText(configFilePath, data);
 		}
 
