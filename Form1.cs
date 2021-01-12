@@ -13,7 +13,7 @@ namespace StealthNotes
 {
 	public partial class Form1 : Form
 	{
-		private const string version = "v0.2-alpha";
+		private const string version = "v0.3-alpha";
 		private InputDevices inputs;
 		private Config config;
 
