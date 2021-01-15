@@ -12,7 +12,7 @@ namespace StealthNotes
 			ActiveInputs = GetActiveInputs();
 		}
 
-		public Dictionary<string, MMDevice> ActiveInputs { get; }
+		private Dictionary<string, MMDevice> ActiveInputs { get; }
 
 		public List<string> DeviceNames
 		{
@@ -24,9 +24,12 @@ namespace StealthNotes
 
 		public void MuteInputByName(string name, bool mute = true)
 		{
-			var device = ActiveInputs[name];
+			var device = GetInputByName(name);
+			
+			if (device == null)
+				return;
 
-			if (device != null && device.AudioEndpointVolume.Mute != mute)
+			if (device.AudioEndpointVolume.Mute != mute)
 				device.AudioEndpointVolume.Mute = mute;
 		}
 
@@ -44,9 +47,9 @@ namespace StealthNotes
 			ActiveInputs.Remove(name);
 		}
 
-		public MMDevice GetDeviceByName(string name)
+		public MMDevice GetInputByName(string name)
 		{
-			return ActiveInputs[name];
+			return ActiveInputs.TryGetValue(name, out var tmp) ? tmp : null;
 		}
 	}
 }

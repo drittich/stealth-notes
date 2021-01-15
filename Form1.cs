@@ -101,7 +101,7 @@ namespace StealthNotes
 		{
 			foreach (var deviceName in inputs.DeviceNames)
 			{
-				var input = inputs.GetDeviceByName(deviceName);
+				var input = inputs.GetInputByName(deviceName);
 				var selected = config.DevicesToMute.Contains(input.FriendlyName);
 				var name = input.FriendlyName;
 				var muted = input.AudioEndpointVolume.Mute;
