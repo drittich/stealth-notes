@@ -39,7 +39,7 @@ namespace StealthNotes
 			this.label1 = new System.Windows.Forms.Label();
 			this.btnReloadDevices = new System.Windows.Forms.Button();
 			this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
-			this.chkIgnoreAltTab = new System.Windows.Forms.CheckBox();
+			this.chkIgnoreModifierKeys = new System.Windows.Forms.CheckBox();
 			((System.ComponentModel.ISupportInitialize)(this.dgvInputs)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.tbMuteInterval)).BeginInit();
 			this.SuspendLayout();
@@ -149,24 +149,24 @@ namespace StealthNotes
 			this.notifyIcon1.Text = "Stealth Notes";
 			this.notifyIcon1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon1_MouseClick);
 			// 
-			// chkIgnoreAltTab
+			// chkIgnoreModifierKeys
 			// 
-			this.chkIgnoreAltTab.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.chkIgnoreAltTab.AutoSize = true;
-			this.chkIgnoreAltTab.Location = new System.Drawing.Point(354, 342);
-			this.chkIgnoreAltTab.Name = "chkIgnoreAltTab";
-			this.chkIgnoreAltTab.Size = new System.Drawing.Size(151, 29);
-			this.chkIgnoreAltTab.TabIndex = 11;
-			this.chkIgnoreAltTab.Text = "Ignore Alt/Tab";
-			this.chkIgnoreAltTab.UseVisualStyleBackColor = true;
-			this.chkIgnoreAltTab.Click += new System.EventHandler(this.chkIgnoreAltTab_Click);
+			this.chkIgnoreModifierKeys.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.chkIgnoreModifierKeys.AutoSize = true;
+			this.chkIgnoreModifierKeys.Location = new System.Drawing.Point(354, 342);
+			this.chkIgnoreModifierKeys.Name = "chkIgnoreModifierKeys";
+			this.chkIgnoreModifierKeys.Size = new System.Drawing.Size(202, 29);
+			this.chkIgnoreModifierKeys.TabIndex = 11;
+			this.chkIgnoreModifierKeys.Text = "Ignore modifier keys";
+			this.chkIgnoreModifierKeys.UseVisualStyleBackColor = true;
+			this.chkIgnoreModifierKeys.Click += new System.EventHandler(this.chkIgnoreAltTab_Click);
 			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(750, 382);
-			this.Controls.Add(this.chkIgnoreAltTab);
+			this.Controls.Add(this.chkIgnoreModifierKeys);
 			this.Controls.Add(this.btnReloadDevices);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.lblUnmuteDuration);
@@ -195,7 +195,7 @@ namespace StealthNotes
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Button btnReloadDevices;
 		private System.Windows.Forms.NotifyIcon notifyIcon1;
-		private System.Windows.Forms.CheckBox chkIgnoreAltTab;
+		private System.Windows.Forms.CheckBox chkIgnoreModifierKeys;
 	}
 }
 

@@ -63,9 +63,9 @@ namespace StealthNotes.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon MicOff2 {
+        internal static System.Drawing.Icon MicOff {
             get {
-                object obj = ResourceManager.GetObject("MicOff2", resourceCulture);
+                object obj = ResourceManager.GetObject("MicOff", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }
@@ -73,9 +73,9 @@ namespace StealthNotes.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon MicOn2 {
+        internal static System.Drawing.Icon MicOn {
             get {
-                object obj = ResourceManager.GetObject("MicOn2", resourceCulture);
+                object obj = ResourceManager.GetObject("MicOn", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }

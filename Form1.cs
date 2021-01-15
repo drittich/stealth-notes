@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Diagnostics;
+using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
+using System.Linq;
 using System.Timers;
 using System.Windows.Forms;
 
@@ -30,12 +30,11 @@ namespace StealthNotes
 
 		private void Form1_Load(object sender, EventArgs e)
 		{
-			Icon = Properties.Resources.MicOn2;
-			notifyIcon1.Icon = Properties.Resources.MicOn2;
+			Icon = Properties.Resources.MicOn;
+			notifyIcon1.Icon = Properties.Resources.MicOn;
 
 			Text = $"Stealth Notes {version}";
 
-			Log($"using config from {Path.Combine(Application.LocalUserAppDataPath, "config.json")}");
 			config = new Config().Load();
 
 			SetupUnMuteTimer(config.MuteInterval);
@@ -45,7 +44,7 @@ namespace StealthNotes
 
 			InitGrid();
 			SetupKeyboardHook();
-			chkIgnoreAltTab.Checked = config.IgnoreAltTab;
+			chkIgnoreModifierKeys.Checked = config.IgnoreModifierKeys;
 
 			SetRefreshDevicesButton();
 		}
@@ -64,14 +63,16 @@ namespace StealthNotes
 			m_GlobalHook.KeyDown += GlobalHookKeyPress;
 		}
 
+		private static List<Keys> ignoreKeycodes = new List<Keys> { Keys.LMenu, Keys.LControlKey, Keys.LWin, Keys.RMenu, Keys.RControlKey, Keys.RWin, Keys.LShiftKey, Keys.RShiftKey };
+		private static List<Keys> ignoreModifiers = new List<Keys> { Keys.Control, Keys.Alt, Keys.Shift };
+
 		private void GlobalHookKeyPress(object sender, KeyEventArgs e)
 		{
-
-			if (config.IgnoreAltTab)
+			if (config.IgnoreModifierKeys)
 			{
-				if (e.KeyCode == Keys.LMenu)
+				if (ignoreKeycodes.Any(kc => e.KeyCode.HasFlag(kc)))
 					return;
-				if (e.KeyCode == Keys.Tab && e.Alt)
+				if (ignoreModifiers.Any(m => e.Modifiers.HasFlag(m)))
 					return;
 			}
 
@@ -79,13 +80,12 @@ namespace StealthNotes
 			{
 				isMuted = true;
 				MuteSelectedItems();
-				notifyIcon1.Icon = Properties.Resources.MicOff2;
+				notifyIcon1.Icon = Properties.Resources.MicOff;
 				if (InvokeRequired)
-					Invoke(new MethodInvoker(delegate { Icon = Properties.Resources.MicOff2; }));
+					Invoke(new MethodInvoker(delegate { Icon = Properties.Resources.MicOff; }));
 				else
-					Icon = Properties.Resources.MicOff2;
+					Icon = Properties.Resources.MicOff;
 			}
-
 
 			timer.Restart();
 		}
@@ -128,13 +128,12 @@ namespace StealthNotes
 			{
 				isMuted = false;
 				MuteSelectedItems(false);
-				notifyIcon1.Icon = Properties.Resources.MicOn2;
+				notifyIcon1.Icon = Properties.Resources.MicOn;
 
 				if (InvokeRequired)
-					Invoke(new MethodInvoker(delegate { Icon = Properties.Resources.MicOn2; }));
+					Invoke(new MethodInvoker(delegate { Icon = Properties.Resources.MicOn; }));
 				else
-					Icon = Properties.Resources.MicOn2;
-
+					Icon = Properties.Resources.MicOn;
 
 				if (reloadDevicesOnNextUnmute)
 				{
@@ -142,11 +141,6 @@ namespace StealthNotes
 					ReloadDevices();
 				}
 			}
-		}
-
-		public void Log(string msg)
-		{
-			Debug.WriteLine(msg);
 		}
 
 		private void MuteSelectedItems(bool mute = true)
@@ -173,8 +167,6 @@ namespace StealthNotes
 
 		private void MuteInput(string name, bool mute = true)
 		{
-			var strMuting = mute ? "Muting" : "Unmuting";
-			Log($"{strMuting} {name}");
 			try
 			{
 				inputs.MuteInputByName(name, mute);
@@ -284,9 +276,9 @@ namespace StealthNotes
 
 		private void Form1_Resize(object sender, EventArgs e)
 		{
-			//if the form is minimized  
-			//hide it from the task bar  
-			//and show the system tray icon (represented by the NotifyIcon control)  
+			//if the form is minimized
+			//hide it from the task bar
+			//and show the system tray icon (represented by the NotifyIcon control)
 			if (WindowState == FormWindowState.Minimized)
 			{
 				Hide();
@@ -296,7 +288,7 @@ namespace StealthNotes
 
 		private void chkIgnoreAltTab_Click(object sender, EventArgs e)
 		{
-			config.IgnoreAltTab = (sender as CheckBox).Checked;
+			config.IgnoreModifierKeys = (sender as CheckBox).Checked;
 			config.Save();
 		}
 

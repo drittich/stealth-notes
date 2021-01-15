@@ -25,7 +25,7 @@ namespace StealthNotes
 		public void MuteInputByName(string name, bool mute = true)
 		{
 			var device = GetInputByName(name);
-			
+
 			if (device == null)
 				return;
 
