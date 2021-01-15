@@ -11,7 +11,7 @@ namespace StealthNotes
 {
 	public partial class Form1 : Form
 	{
-		private const string version = "v0.4-beta";
+		private const string version = "v0.5-beta";
 		private InputDevices inputs;
 		private Config config;
 
@@ -30,6 +30,9 @@ namespace StealthNotes
 
 		private void Form1_Load(object sender, EventArgs e)
 		{
+			Icon = Properties.Resources.MicOn2;
+			notifyIcon1.Icon = Properties.Resources.MicOn2;
+
 			Text = $"Stealth Notes {version}";
 
 			Log($"using config from {Path.Combine(Application.LocalUserAppDataPath, "config.json")}");
@@ -42,6 +45,7 @@ namespace StealthNotes
 
 			InitGrid();
 			SetupKeyboardHook();
+			chkIgnoreAltTab.Checked = config.IgnoreAltTab;
 
 			SetRefreshDevicesButton();
 		}
@@ -62,11 +66,26 @@ namespace StealthNotes
 
 		private void GlobalHookKeyPress(object sender, KeyEventArgs e)
 		{
+
+			if (config.IgnoreAltTab)
+			{
+				if (e.KeyCode == Keys.LMenu)
+					return;
+				if (e.KeyCode == Keys.Tab && e.Alt)
+					return;
+			}
+
 			if (!isMuted)
 			{
 				isMuted = true;
 				MuteSelectedItems();
+				notifyIcon1.Icon = Properties.Resources.MicOff2;
+				if (InvokeRequired)
+					Invoke(new MethodInvoker(delegate { Icon = Properties.Resources.MicOff2; }));
+				else
+					Icon = Properties.Resources.MicOff2;
 			}
+
 
 			timer.Restart();
 		}
@@ -109,6 +128,13 @@ namespace StealthNotes
 			{
 				isMuted = false;
 				MuteSelectedItems(false);
+				notifyIcon1.Icon = Properties.Resources.MicOn2;
+
+				if (InvokeRequired)
+					Invoke(new MethodInvoker(delegate { Icon = Properties.Resources.MicOn2; }));
+				else
+					Icon = Properties.Resources.MicOn2;
+
 
 				if (reloadDevicesOnNextUnmute)
 				{
@@ -213,11 +239,6 @@ namespace StealthNotes
 			dgvInputs.ClearSelection();
 		}
 
-		private void btnMuteAll_Click(object sender, EventArgs e)
-		{
-			MuteAllInputs();
-		}
-
 		private void btnReload_Click(object sender, EventArgs e)
 		{
 			ReloadDevices();
@@ -259,6 +280,31 @@ namespace StealthNotes
 		private void btnReloadDevices_Click(object sender, EventArgs e)
 		{
 			ReloadDevices();
+		}
+
+		private void Form1_Resize(object sender, EventArgs e)
+		{
+			//if the form is minimized  
+			//hide it from the task bar  
+			//and show the system tray icon (represented by the NotifyIcon control)  
+			if (WindowState == FormWindowState.Minimized)
+			{
+				Hide();
+				notifyIcon1.Visible = true;
+			}
+		}
+
+		private void chkIgnoreAltTab_Click(object sender, EventArgs e)
+		{
+			config.IgnoreAltTab = (sender as CheckBox).Checked;
+			config.Save();
+		}
+
+		private void notifyIcon1_MouseClick(object sender, MouseEventArgs e)
+		{
+			Show();
+			WindowState = FormWindowState.Normal;
+			notifyIcon1.Visible = false;
 		}
 	}
 }

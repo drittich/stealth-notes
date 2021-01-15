@@ -12,6 +12,7 @@ namespace StealthNotes
 
 		public HashSet<string> DevicesToMute { get; set; }
 		public int MuteInterval { get; set; }
+		public bool IgnoreAltTab { get; set; }
 
 		public Config()
 		{
@@ -32,6 +33,7 @@ namespace StealthNotes
 				var config = JsonSerializer.Deserialize<Config>(json);
 				DevicesToMute = config.DevicesToMute;
 				MuteInterval = (config.MuteInterval < 1 || config.MuteInterval > 10) ? 2 : config.MuteInterval;
+				IgnoreAltTab = config.IgnoreAltTab;
 			}
 
 			return this;
