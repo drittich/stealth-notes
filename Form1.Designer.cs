@@ -102,13 +102,15 @@ namespace StealthNotes
 			// tbMuteInterval
 			// 
 			this.tbMuteInterval.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.tbMuteInterval.LargeChange = 1;
+			this.tbMuteInterval.LargeChange = 100;
 			this.tbMuteInterval.Location = new System.Drawing.Point(5, 312);
+			this.tbMuteInterval.Maximum = 1000;
 			this.tbMuteInterval.Minimum = 1;
 			this.tbMuteInterval.Name = "tbMuteInterval";
 			this.tbMuteInterval.Size = new System.Drawing.Size(325, 69);
+			this.tbMuteInterval.SmallChange = 10;
 			this.tbMuteInterval.TabIndex = 5;
-			this.tbMuteInterval.Value = 1;
+			this.tbMuteInterval.Value = 200;
 			this.tbMuteInterval.Scroll += new System.EventHandler(this.trackBar1_Scroll);
 			this.tbMuteInterval.ValueChanged += new System.EventHandler(this.trackBar1_ValueChanged);
 			// 
@@ -118,9 +120,9 @@ namespace StealthNotes
 			this.lblUnmuteDuration.AutoSize = true;
 			this.lblUnmuteDuration.Location = new System.Drawing.Point(68, 344);
 			this.lblUnmuteDuration.Name = "lblUnmuteDuration";
-			this.lblUnmuteDuration.Size = new System.Drawing.Size(201, 25);
+			this.lblUnmuteDuration.Size = new System.Drawing.Size(180, 25);
 			this.lblUnmuteDuration.TabIndex = 1;
-			this.lblUnmuteDuration.Text = "Unmute after 2 seconds";
+			this.lblUnmuteDuration.Text = "Unmute after 200 ms";
 			// 
 			// label1
 			// 

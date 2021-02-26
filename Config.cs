@@ -11,7 +11,7 @@ namespace StealthNotes
 		private static string configFileName = "config.json";
 
 		public HashSet<string> DevicesToMute { get; set; }
-		public int MuteInterval { get; set; }
+		public int MuteIntervalMs { get; set; }
 		public bool IgnoreModifierKeys { get; set; }
 
 		public Config()
@@ -24,7 +24,7 @@ namespace StealthNotes
 			if (!File.Exists(configFilePath))
 			{
 				DevicesToMute = new HashSet<string>();
-				MuteInterval = 2;
+				MuteIntervalMs = 20;
 				Save();
 			}
 			else
@@ -32,7 +32,7 @@ namespace StealthNotes
 				var json = File.ReadAllText(configFilePath);
 				var config = JsonSerializer.Deserialize<Config>(json);
 				DevicesToMute = config.DevicesToMute;
-				MuteInterval = (config.MuteInterval < 1 || config.MuteInterval > 10) ? 2 : config.MuteInterval;
+				MuteIntervalMs = (config.MuteIntervalMs < 1 || config.MuteIntervalMs > 1000) ? 200 : config.MuteIntervalMs;
 				IgnoreModifierKeys = config.IgnoreModifierKeys;
 			}
 
