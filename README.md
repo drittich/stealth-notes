@@ -1,6 +1,8 @@
 # Stealth Notes
 Stealth Notes is a Windows utility for muting audio input (e.g., microphone) sources while typing. 
 
+![image](https://user-images.githubusercontent.com/1222810/109326848-a9a1ac00-7825-11eb-9252-50eb7d9fd033.png)
+
 ## Overview
 
 Stealth Notes is useful for video meetings where you want to generally keep your mic enabled for talking, but still be able to take notes without annoying the other participants.
