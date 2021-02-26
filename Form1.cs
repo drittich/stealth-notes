@@ -18,7 +18,7 @@ namespace StealthNotes
 		[DllImport("User32.dll")]
 		public static extern void ReleaseDC(IntPtr hwnd, IntPtr dc);
 
-		private const string version = "v0.5-beta";
+		private const string version = "v0.6-beta";
 		private InputDevices inputs;
 		private Config config;
 
