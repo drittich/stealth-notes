@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Windows.Forms;
 
 using NAudio.CoreAudioApi;
 
@@ -22,15 +24,42 @@ namespace StealthNotes
 			}
 		}
 
+		/// <summary>
+		/// Mutes a given input if it is in active use
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="mute"></param>
 		public void MuteInputByName(string name, bool mute = true)
 		{
 			var device = GetInputByName(name);
-
 			if (device == null)
 				return;
 
 			if (device.AudioEndpointVolume.Mute != mute)
 				device.AudioEndpointVolume.Mute = mute;
+		}
+
+		/// <summary>
+		/// Whether the device is currently in active use
+		/// </summary>
+		/// <param name="device"></param>
+		/// <param name="application"></param>
+		/// <returns>True if the input is currently active</returns>
+		public bool IsActiveInApplication(string name, string application)
+		{
+			var device = GetInputByName(name);
+
+			if (device == null)
+				return false;
+
+			int count = device.AudioSessionManager.Sessions.Count;
+			for (var i = 0; i < count; i++)
+			{
+				var session = device.AudioSessionManager.Sessions[i];
+				if (session.State == NAudio.CoreAudioApi.Interfaces.AudioSessionState.AudioSessionStateActive && session.GetSessionIdentifier.Contains(application))
+					return true;
+			}
+			return false;
 		}
 
 		private Dictionary<string, MMDevice> GetActiveInputs()
@@ -49,7 +78,16 @@ namespace StealthNotes
 
 		public MMDevice GetInputByName(string name)
 		{
-			return ActiveInputs.TryGetValue(name, out var tmp) ? tmp : null;
+			var x = ActiveInputs.TryGetValue(name, out var tmp) ? tmp : null;
+			int sessionCount = x.AudioSessionManager.Sessions.Count;
+			for (var i = 0; i < sessionCount; i++)
+			{
+				var session = x.AudioSessionManager.Sessions[i];
+				var id = session.GetSessionInstanceIdentifier;
+				Debug.WriteLine(id);
+			}
+
+			return x;
 		}
 	}
 }

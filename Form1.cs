@@ -85,6 +85,10 @@ namespace StealthNotes
 					return;
 			}
 
+			// don't mute mic/show visual alert if we're not currently using any inputs
+			if (!IsInUseByApplication())
+				return;
+
 			ShowAlert();
 
 			if (!isMuted)
@@ -179,12 +183,31 @@ namespace StealthNotes
 				{
 					var name = row.Cells[(int)DeviceGridColumns.Name].Value.ToString();
 					MuteInput(name, mute);
+
 				}
 			}
 		}
 
+		private bool IsInUseByApplication()
+		{
+			foreach (DataGridViewRow row in dgvInputs.Rows)
+			{
+				var selected = (bool)row.Cells[(int)DeviceGridColumns.Selected].Value;
+				if (selected)
+				{
+					var name = row.Cells[(int)DeviceGridColumns.Name].Value.ToString();
+					if (inputs.IsActiveInApplication(name, "Teams"))
+						return true;
+				}
+			}
+			return false;
+		}
+
 		private void MuteAllInputs(bool mute = true)
 		{
+			if (!IsInUseByApplication())
+				return;
+
 			foreach (DataGridViewRow row in dgvInputs.Rows)
 			{
 				var name = row.Cells[(int)DeviceGridColumns.Name].Value.ToString();
