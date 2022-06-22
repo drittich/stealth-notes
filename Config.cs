@@ -13,6 +13,7 @@ namespace StealthNotes
 		public HashSet<string> DevicesToMute { get; set; }
 		public int MuteIntervalMs { get; set; }
 		public bool IgnoreModifierKeys { get; set; }
+		public bool StartMinimized { get; set; }
 
 		public Config()
 		{
@@ -34,6 +35,7 @@ namespace StealthNotes
 				DevicesToMute = config.DevicesToMute;
 				MuteIntervalMs = (config.MuteIntervalMs < 1 || config.MuteIntervalMs > 1000) ? 200 : config.MuteIntervalMs;
 				IgnoreModifierKeys = config.IgnoreModifierKeys;
+				StartMinimized = config.StartMinimized;
 			}
 
 			return this;

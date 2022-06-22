@@ -8,6 +8,8 @@ using System.Windows.Forms;
 
 using Gma.System.MouseKeyHook;
 
+using Microsoft.Win32;
+
 
 namespace StealthNotes
 {
@@ -18,7 +20,7 @@ namespace StealthNotes
 		[DllImport("User32.dll")]
 		public static extern void ReleaseDC(IntPtr hwnd, IntPtr dc);
 
-		private const string version = "v0.6-beta";
+		private const string version = "v0.7";
 		private InputDevices inputs;
 		private Config config;
 
@@ -56,6 +58,10 @@ namespace StealthNotes
 			chkIgnoreModifierKeys.Checked = config.IgnoreModifierKeys;
 
 			SetRefreshDevicesButton();
+
+			chkStartMinimized.Checked = config.StartMinimized;
+			if (chkStartMinimized.Checked)
+				WindowState = FormWindowState.Minimized;
 		}
 
 		private void SetRefreshDevicesButton()
@@ -326,13 +332,19 @@ namespace StealthNotes
 
 		private void Form1_Resize(object sender, EventArgs e)
 		{
-			//if the form is minimized
-			//hide it from the task bar
-			//and show the system tray icon (represented by the NotifyIcon control)
-			if (WindowState == FormWindowState.Minimized)
+			notifyIcon1.BalloonTipIcon = ToolTipIcon.Info;
+
+			if (FormWindowState.Minimized == WindowState)
 			{
-				Hide();
 				notifyIcon1.Visible = true;
+				FormBorderStyle = FormBorderStyle.FixedToolWindow;
+				//notifyIcon1.ShowBalloonTip(500);
+				ShowInTaskbar = false;
+			}
+			else if (FormWindowState.Normal == WindowState)
+			{
+				notifyIcon1.Visible = false;
+				FormBorderStyle = FormBorderStyle.FixedSingle;
 			}
 		}
 
@@ -344,9 +356,18 @@ namespace StealthNotes
 
 		private void notifyIcon1_MouseClick(object sender, MouseEventArgs e)
 		{
-			Show();
 			WindowState = FormWindowState.Normal;
 			notifyIcon1.Visible = false;
+			ShowInTaskbar = true;
+		}
+
+		// screen lock event handler
+		private void SystemEvents_SessionSwitch(object sender, SessionSwitchEventArgs e)
+		{
+			if (e.Reason == SessionSwitchReason.SessionUnlock)
+			{
+				ReloadDevices();
+			}
 		}
 
 		[DllImport("user32.dll")]
@@ -365,7 +386,7 @@ namespace StealthNotes
 				Bottom = bottom;
 			}
 
-			public RECT(System.Drawing.Rectangle r) : this(r.Left, r.Top, r.Right, r.Bottom) { }
+			public RECT(Rectangle r) : this(r.Left, r.Top, r.Right, r.Bottom) { }
 
 			public int X
 			{
@@ -391,24 +412,24 @@ namespace StealthNotes
 				set { Right = value + Left; }
 			}
 
-			public System.Drawing.Point Location
+			public Point Location
 			{
-				get { return new System.Drawing.Point(Left, Top); }
+				get { return new Point(Left, Top); }
 				set { X = value.X; Y = value.Y; }
 			}
 
-			public System.Drawing.Size Size
+			public Size Size
 			{
-				get { return new System.Drawing.Size(Width, Height); }
+				get { return new Size(Width, Height); }
 				set { Width = value.Width; Height = value.Height; }
 			}
 
-			public static implicit operator System.Drawing.Rectangle(RECT r)
+			public static implicit operator Rectangle(RECT r)
 			{
-				return new System.Drawing.Rectangle(r.Left, r.Top, r.Width, r.Height);
+				return new Rectangle(r.Left, r.Top, r.Width, r.Height);
 			}
 
-			public static implicit operator RECT(System.Drawing.Rectangle r)
+			public static implicit operator RECT(Rectangle r)
 			{
 				return new RECT(r);
 			}
@@ -432,20 +453,27 @@ namespace StealthNotes
 			{
 				if (obj is RECT)
 					return Equals((RECT)obj);
-				else if (obj is System.Drawing.Rectangle)
-					return Equals(new RECT((System.Drawing.Rectangle)obj));
+				else if (obj is Rectangle)
+					return Equals(new RECT((Rectangle)obj));
 				return false;
 			}
 
 			public override int GetHashCode()
 			{
-				return ((System.Drawing.Rectangle)this).GetHashCode();
+				return ((Rectangle)this).GetHashCode();
 			}
 
 			public override string ToString()
 			{
 				return string.Format(System.Globalization.CultureInfo.CurrentCulture, "{{Left={0},Top={1},Right={2},Bottom={3}}}", Left, Top, Right, Bottom);
 			}
+		}
+
+		private void chkStartMinimized_CheckedChanged(object sender, EventArgs e)
+		{
+			var chk = sender as CheckBox;
+			config.StartMinimized = chk.Checked;
+			config.Save();
 		}
 	}
 }
