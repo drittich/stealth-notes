@@ -26,7 +26,8 @@ namespace StealthNotes
 
 		private bool isMuted = false;
 
-		private EnhancedTimer timer;
+		private EnhancedTimer unmuteTimer;
+		private EnhancedTimer refreshDevicesTimer;
 		private Color defaultCellBgColor = Color.White;
 		private bool reloadDevicesOnNextUnmute = false;
 
@@ -48,7 +49,9 @@ namespace StealthNotes
 
 			config = new Config().Load();
 
-			SetupUnMuteTimer(config.MuteIntervalMs);
+			SetupUnmuteTimer(config.MuteIntervalMs);
+			//SetupRefreshDevicesTimer(config.RefreshDevicesIntervalMs);
+			SetupRefreshDevicesTimer();
 
 			tbMuteInterval.Value = config.MuteIntervalMs;
 			SetNewInterval(config.MuteIntervalMs);
@@ -108,7 +111,7 @@ namespace StealthNotes
 					Icon = Properties.Resources.MicOff;
 			}
 
-			timer.Restart();
+			unmuteTimer.Restart();
 		}
 
 		private void ShowAlert()
@@ -146,16 +149,26 @@ namespace StealthNotes
 			}
 		}
 
-		private void SetupUnMuteTimer(int intervalSeconds)
+		private void SetupUnmuteTimer(int intervalSeconds)
 		{
-			timer = new EnhancedTimer(config.MuteIntervalMs * 1000);
-			timer.Elapsed += OnTimedEvent;
-			timer.AutoReset = false;
-			timer.Enabled = true;
-			timer.Interval = intervalSeconds * 1000;
+			unmuteTimer = new EnhancedTimer(config.MuteIntervalMs * 1000);
+			unmuteTimer.Elapsed += OnUnmuteTimedEvent;
+			unmuteTimer.AutoReset = false;
+			unmuteTimer.Enabled = true;
+			unmuteTimer.Interval = intervalSeconds * 1000;
 		}
 
-		private void OnTimedEvent(object sender, ElapsedEventArgs e)
+		private void SetupRefreshDevicesTimer()
+		{
+			var refreshIntervalMinutes = 5;
+			refreshDevicesTimer = new EnhancedTimer(config.MuteIntervalMs * 1000);
+			refreshDevicesTimer.Elapsed += OnRefreshDevicesTimedEvent;
+			refreshDevicesTimer.AutoReset = true;
+			refreshDevicesTimer.Enabled = true;
+			refreshDevicesTimer.Interval = refreshIntervalMinutes * 60 * 1000;
+		}
+
+		private void OnUnmuteTimedEvent(object sender, ElapsedEventArgs e)
 		{
 			if (isMuted)
 			{
@@ -180,6 +193,11 @@ namespace StealthNotes
 			}
 		}
 
+		private void OnRefreshDevicesTimedEvent(object sender, ElapsedEventArgs e)
+		{
+			ReloadDevices();
+		}
+
 		private void MuteSelectedItems(bool mute = true)
 		{
 			foreach (DataGridViewRow row in dgvInputs.Rows)
@@ -189,7 +207,6 @@ namespace StealthNotes
 				{
 					var name = row.Cells[(int)DeviceGridColumns.Name].Value.ToString();
 					MuteInput(name, mute);
-
 				}
 			}
 		}
@@ -202,7 +219,7 @@ namespace StealthNotes
 				if (selected)
 				{
 					var name = row.Cells[(int)DeviceGridColumns.Name].Value.ToString();
-					if (inputs.IsActiveInApplication(name, "Teams"))
+					if (inputs.IsActiveInApplication(name, new string[] {"Teams", "Zoom"}))
 						return true;
 				}
 			}
@@ -230,7 +247,7 @@ namespace StealthNotes
 				row.Cells[(int)DeviceGridColumns.Muted].Value = mute;
 				row.Cells[(int)DeviceGridColumns.Name].Style.BackColor = mute ? Color.LightPink : defaultCellBgColor;
 			}
-			catch (System.Runtime.InteropServices.COMException)
+			catch (COMException)
 			{
 				reloadDevicesOnNextUnmute = true;
 				inputs.RemoveActiveInput(name);
@@ -317,7 +334,7 @@ namespace StealthNotes
 		private void SetNewInterval(int intervalMilliseconds)
 		{
 			lblUnmuteDuration.Text = $"Unmute after {intervalMilliseconds} ms";
-			timer.Interval = intervalMilliseconds;
+			unmuteTimer.Interval = intervalMilliseconds;
 		}
 
 		private enum DeviceGridColumns

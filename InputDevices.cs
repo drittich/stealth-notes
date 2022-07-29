@@ -45,7 +45,7 @@ namespace StealthNotes
 		/// <param name="device"></param>
 		/// <param name="application"></param>
 		/// <returns>True if the input is currently active</returns>
-		public bool IsActiveInApplication(string name, string application)
+		public bool IsActiveInApplication(string name, IEnumerable<string> applications)
 		{
 			var device = GetInputByName(name);
 
@@ -56,7 +56,8 @@ namespace StealthNotes
 			for (var i = 0; i < count; i++)
 			{
 				var session = device.AudioSessionManager.Sessions[i];
-				if (session.State == NAudio.CoreAudioApi.Interfaces.AudioSessionState.AudioSessionStateActive && session.GetSessionIdentifier.Contains(application))
+				var sessionIdentifier = session.GetSessionIdentifier;
+				if (session.State == NAudio.CoreAudioApi.Interfaces.AudioSessionState.AudioSessionStateActive && applications.Any(a => sessionIdentifier.Contains(a)))
 					return true;
 			}
 			return false;

@@ -14,6 +14,7 @@ namespace StealthNotes
 		public int MuteIntervalMs { get; set; }
 		public bool IgnoreModifierKeys { get; set; }
 		public bool StartMinimized { get; set; }
+		//public int RefreshDevicesIntervalMs { get; internal set; }
 
 		public Config()
 		{
