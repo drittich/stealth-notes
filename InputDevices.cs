@@ -16,6 +16,12 @@ namespace StealthNotes
 
 		private Dictionary<string, MMDevice> ActiveInputs { get; }
 
+		public bool IsMutedByName(string name)
+		{
+			var device = GetInputByName(name);
+			return device.AudioEndpointVolume.Mute;
+		}
+
 		public List<string> DeviceNames
 		{
 			get

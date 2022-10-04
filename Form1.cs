@@ -31,7 +31,9 @@ namespace StealthNotes
 		private Color defaultCellBgColor = Color.White;
 		private bool reloadDevicesOnNextUnmute = false;
 
-		private Rectangle alertRectangle = new Rectangle(0, 0, 240, 240);
+		private Rectangle alertRectangle1 = new Rectangle(0, 0, 240, 240);
+		private Rectangle alertRectangle2 = new Rectangle(240, 240, 240, 240);
+		private Rectangle activeRectangle = new Rectangle(0, 0, 240, 240);
 
 		private IKeyboardMouseEvents m_GlobalHook;
 
@@ -50,7 +52,6 @@ namespace StealthNotes
 			config = new Config().Load();
 
 			SetupUnmuteTimer(config.MuteIntervalMs);
-			//SetupRefreshDevicesTimer(config.RefreshDevicesIntervalMs);
 			SetupRefreshDevicesTimer();
 
 			tbMuteInterval.Value = config.MuteIntervalMs;
@@ -100,7 +101,7 @@ namespace StealthNotes
 
 			ShowAlert();
 
-			if (!isMuted)
+			if (!isMuted && !SelectedItemsAreMuted())
 			{
 				isMuted = true;
 				MuteSelectedItems();
@@ -111,7 +112,16 @@ namespace StealthNotes
 					Icon = Properties.Resources.MicOff;
 			}
 
-			unmuteTimer.Restart();
+
+			if (isMuted)
+				unmuteTimer.Restart();
+		}
+
+		private bool SelectedItemsAreMuted()
+		{
+			if (GetSelectedItemNames().Any(name => !inputs.IsMutedByName(name)))
+				return false;
+			return true;
 		}
 
 		private void ShowAlert()
@@ -120,7 +130,12 @@ namespace StealthNotes
 			Graphics g = Graphics.FromHdc(desktopPtr);
 
 			SolidBrush b = new SolidBrush(Color.DeepPink);
-			g.FillRectangle(b, alertRectangle);
+
+			InvalidateRect(IntPtr.Zero, activeRectangle, true);
+
+			activeRectangle = activeRectangle == alertRectangle1 ? alertRectangle2 : alertRectangle1;
+
+			g.FillRectangle(b, activeRectangle);
 
 			g.Dispose();
 			ReleaseDC(IntPtr.Zero, desktopPtr);
@@ -176,7 +191,7 @@ namespace StealthNotes
 				MuteSelectedItems(false);
 
 				// hide visual alert
-				InvalidateRect(IntPtr.Zero, alertRectangle, true);
+				InvalidateRect(IntPtr.Zero, activeRectangle, true);
 
 				notifyIcon1.Icon = Properties.Resources.MicOn;
 
@@ -200,15 +215,26 @@ namespace StealthNotes
 
 		private void MuteSelectedItems(bool mute = true)
 		{
+			foreach (var name in GetSelectedItemNames())
+			{
+				MuteInput(name, mute);
+			}
+		}
+
+		private IEnumerable<string> GetSelectedItemNames()
+		{
+			var names = new List<string>();
 			foreach (DataGridViewRow row in dgvInputs.Rows)
 			{
 				var selected = (bool)row.Cells[(int)DeviceGridColumns.Selected].Value;
 				if (selected)
 				{
 					var name = row.Cells[(int)DeviceGridColumns.Name].Value.ToString();
-					MuteInput(name, mute);
+					names.Add(name);
 				}
 			}
+
+			return names;
 		}
 
 		private bool IsInUseByApplication()
@@ -219,7 +245,7 @@ namespace StealthNotes
 				if (selected)
 				{
 					var name = row.Cells[(int)DeviceGridColumns.Name].Value.ToString();
-					if (inputs.IsActiveInApplication(name, new string[] {"Teams", "Zoom"}))
+					if (inputs.IsActiveInApplication(name, new string[] { "Teams", "Zoom" }))
 						return true;
 				}
 			}
